@@ -9,7 +9,7 @@
     
     <name>jms2-test</name>
     <url>https://github.com/phillip-kruger/jms2-test</url>
-    <description>Testing JMS 2.0 on all application servers</description>
+    <description>Testing JMS 2.0 on some application servers</description>
     
     <licenses>
         <license>
