@@ -10,6 +10,8 @@ Testing some of the JMS 2.0 features
 
 `mvn clean install -Dwildfly`
 
+Both will start the server in the foreground (as part of the maven build)
+
 ### To test
 Then hit this URL (GET) to create a message on the queue
 
