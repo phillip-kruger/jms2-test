@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.github.phillip-kruger</groupId>
+    <artifactId>jms2-test</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+    <packaging>war</packaging>
+    
+    <name>jms2-test</name>
+    <url>https://github.com/phillip-kruger/jms2-test</url>
+    <description>Testing JMS 2.0 on all application servers</description>
+    
+    <licenses>
+        <license>
+            <name>Apache License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+    
+    <scm>
+        <connection>scm:git:https://github.com/phillip-kruger/jms2-test.git</connection>
+        <url>https://github.com/phillip-kruger/jms2-test</url>
+    </scm>
+
+    <developers>
+        <developer>
+            <name>Phillip Kruger</name>
+            <email>phillip.kruger@phillip-kruger.com</email>
+            <organizationUrl>http://www.phillip-kruger.com</organizationUrl>
+        </developer>
+    </developers>
+
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <!-- Java version -->
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        
+        <!-- JEE Platform -->        
+        <jee.version>7.0</jee.version>
+        <lombok.version>1.16.18</lombok.version>
+       
+        <failOnMissingWebXml>false</failOnMissingWebXml>
+        
+        <!-- Logging settings -->
+        <log.level>FINEST</log.level> 
+        <log.name>com.github.phillipkruger</log.name>
+    </properties>
+    
+    <dependencies>
+        <!-- Jave ee -->
+        <dependency>
+            <groupId>javax</groupId>
+            <artifactId>javaee-api</artifactId>
+            <version>${jee.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <!-- Lombok -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>${lombok.version}</version>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+    
+    <build>
+        <finalName>${project.artifactId}</finalName>
+    </build>
+    
+    <profiles>
+        <!-- Activate using the liberty property: mvn clean install -Dliberty -->
+        <profile>
+            <id>liberty</id>
+            <activation>
+                <property>
+                    <name>liberty</name>
+                </property>
+            </activation>
+            <properties>
+                <openliberty.version>17.0.0.3</openliberty.version>
+                <openliberty.http.port>8080</openliberty.http.port>
+                <openliberty.https.port>8443</openliberty.https.port>
+                <openliberty.maven.version>2.1.1</openliberty.maven.version>
+            </properties>
+            
+            <build>
+                <resources>
+                    <resource>
+                        <directory>${basedir}/src/main/liberty/config</directory>
+                        <targetPath>${project.build.directory}</targetPath>
+                        <filtering>true</filtering>
+                        <includes>
+                            <include>server.xml</include>
+                        </includes>
+                    </resource>
+                </resources>
+                <plugins>
+                    <plugin>
+                        <groupId>net.wasdev.wlp.maven.plugins</groupId>
+                        <artifactId>liberty-maven-plugin</artifactId>
+                        <version>${openliberty.maven.version}</version>
+                        <configuration>
+                            <assemblyArtifact>
+                                <groupId>io.openliberty</groupId>
+                                <artifactId>openliberty-runtime</artifactId>
+                                <version>${openliberty.version}</version>
+                                <type>zip</type>
+                            </assemblyArtifact>
+
+                            <configFile>${project.build.directory}/server.xml</configFile>
+                            <bootstrapProperties>
+                                <httpPort>${openliberty.http.port}</httpPort>
+                                <httpsPort>${openliberty.https.port}</httpsPort>
+                            </bootstrapProperties>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <phase>install</phase>
+                                <goals>
+                                    <goal>install-server</goal>
+                                    <goal>create-server</goal>
+                                    <goal>run-server</goal>    
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                </plugins>
+                        
+            </build>
+        </profile>
+        
+        <!-- Activate using the wildfly property: mvn clean install -Dwildfly -->
+        <profile>
+            <id>wildfly</id>
+            <activation>
+                <property>
+                    <name>wildfly</name>
+                </property>
+            </activation>
+            
+            <properties>
+                <wildfly.version>11.0.0.Final</wildfly.version>
+                <wildfly.maven.version>1.2.1.Final</wildfly.maven.version>
+            </properties>
+            
+            <build>
+                <plugins>
+                    
+                    <plugin>
+                        <groupId>com.googlecode.maven-download-plugin</groupId>
+                        <artifactId>download-maven-plugin</artifactId>
+                        <version>1.4.0</version>
+                        <executions>
+                            <execution>
+                                <id>1</id>
+                                <phase>pre-integration-test</phase>
+                                <goals>
+                                    <goal>wget</goal>
+                                </goals>
+                                <configuration>
+                                    <url>http://download.jboss.org/wildfly/${wildfly.version}/wildfly-${wildfly.version}.zip</url>
+                                    <unpack>true</unpack>
+                                    <outputDirectory>${project.build.directory}</outputDirectory>
+                                    <md5>cabc51179090c24c2644c118df7422d9</md5>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    
+                    
+                    <plugin>
+                        <groupId>org.wildfly.plugins</groupId>
+                        <artifactId>wildfly-maven-plugin</artifactId>
+                        <version>${wildfly.maven.version}</version>
+                        <configuration>
+                            
+                            <server-config>standalone-full.xml</server-config> 
+                            <jboss-home>${project.build.directory}/wildfly-${wildfly.version}</jboss-home>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>2</id>
+                                <phase>install</phase>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    
+                </plugins>        
+            </build>
+        </profile>    
+        
+    </profiles>
+    
+</project>
