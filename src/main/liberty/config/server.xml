@@ -24,15 +24,10 @@
     <messagingEngine>
         <queue id="testQueue" />
     </messagingEngine>
-<!--    <jmsQueueConnectionFactory jndiName="jms/notesQueueCF">
-        <properties.wasJms />
-    </jmsQueueConnectionFactory>
-    <jmsQueue jndiName="jms/notesQueue">
-        <properties.wasJms queueName="notesQueue" />
-    </jmsQueue>
-    <jmsActivationSpec id="notes-example/notesQueueMDB">
-        <properties.wasJms destination="java:global/jms/notesQueue" destinationType="javax.jms.Queue"/>
-    </jmsActivationSpec>-->
+    
+    <jmsActivationSpec id="jms2-test/testQueueMDB">
+        <properties.wasJms destinationRef="java:app/testQueue" />
+    </jmsActivationSpec>
     
     <application location="${project.build.directory}/${project.build.finalName}.war"/>
     

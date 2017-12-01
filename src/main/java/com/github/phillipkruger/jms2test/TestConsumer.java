@@ -11,11 +11,11 @@ import lombok.extern.java.Log;
 
 @Log
 
-@MessageDriven(mappedName="java:app/testQueue",activationConfig =  {
+@MessageDriven(name="testQueueMDB", mappedName="java:app/testQueue",activationConfig =  {
     @ActivationConfigProperty(propertyName = "destinationType",
                               propertyValue = "javax.jms.Queue"),
     @ActivationConfigProperty(propertyName = "destination",
-            propertyValue = "testQueue")
+            propertyValue = "java:app/testQueue")
 })
 public class TestConsumer implements MessageListener {
     
